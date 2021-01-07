@@ -4,7 +4,7 @@ from pprint import pprint
 from random import sample
 
 
-# Prepare data - all data in float
+# Prepare data - all data in int
 def prepareData(df):
     dataType = df.dtypes.tolist()  # we need to know types of values in every column
     columnNames = df.columns.tolist()  # save the column names
@@ -25,7 +25,7 @@ def prepareData(df):
 
 
 # Load and prepare data from specific file
-def loadData(filename):              # TODO: zrobic podzial lepszym sposobem niz wypisaniem wszystkiego
+def loadData(filename):  # TODO: zrobic podzial lepszym sposobem niz wypisaniem wszystkiego
     df = pd.read_csv(filename)
     df = prepareData(df)
     workday = df[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'reason',
@@ -148,9 +148,10 @@ def bestSplit(data, splits):
 
 # Build decision tree where subtree is: {question: [yes_option, no_option]}
 def buildTree(df, level):
-
-    if level == 0:            # we want to give whole dataframe to the algorithm so we must be sure that we have values
+    global columnHeaders
+    if level == 0:  # we want to give whole dataframe to the algorithm so we must be sure that we have values
         data = df.values
+        columnHeaders = df.columns
     else:
         data = df
 
@@ -162,15 +163,48 @@ def buildTree(df, level):
         splitColumn, splitValue = bestSplit(data, splits)
         dataBelow, dataAbove = split(data, splitColumn, splitValue)
 
-        question = "{} <= {}".format(splitColumn, splitValue)
+        question = "{} <= {}".format(columnHeaders[splitColumn], splitValue)
         subTree = {question: []}
 
         yes_option = buildTree(dataBelow, level)
         no_option = buildTree(dataAbove, level)
-        subTree[question].append(yes_option)
-        subTree[question].append(no_option)
+
+        if yes_option == no_option:
+            subTree[question].append(yes_option)
+        else:
+            subTree[question].append(yes_option)
+            subTree[question].append(no_option)
 
         return subTree
+
+
+def tryToClassify(individual, tree):
+    question = list(tree.keys())[0]
+    feature, operator, value = question.split()
+
+    if individual[feature] <= float(value):
+        answer = tree[question][0]
+    else:
+        answer = tree[question][1]
+
+    if not isinstance(answer, dict):
+        return answer
+    else:
+        subTree = answer
+        return tryToClassify(individual, subTree)
+
+
+def testTree(tree, test_df):
+
+    correct = 0
+    for i in range(len(test_df)):
+        label = test_df.iloc[i][-1]
+        classification = tryToClassify(test_df.iloc[i], tree)
+        if classification == label:
+            correct += 1
+
+    return correct/(len(test_df))
+
 
 
 def main():
@@ -181,11 +215,13 @@ def main():
 
     # Now we split data into train_df and test_df - we can split either workday_df or weekend_df
     # second parameter is test data size - between 0 and 1
-    train_df, test_df = ttsplit(workday_df, 0.2)
+    train_df, test_df = ttsplit(workday_df, 0.4)
 
     # main algorithm
     tree = buildTree(train_df, 0)
     pprint(tree)
+
+    result = testTree(tree, test_df)
 
 
 if __name__ == "__main__":
