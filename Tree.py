@@ -6,15 +6,6 @@ class Tree:
     def __init__(self):
         pass
 
-    # Train-Test Split
-    def ttsplit(self, df, test_size):
-        size = round(test_size * len(df))
-        index = df.index.tolist()
-        test_indexes = self.sample(population=index, k=size)
-
-        test_df = df.loc[test_indexes]
-        train_df = df.drop(test_indexes)
-        return train_df, test_df
 
     # We check here whether our data set contains only data from one class
     def isPure( self, data) -> bool:

@@ -5,6 +5,9 @@ from random import sample
 
 
 # Prepare data - all data in int
+from Tree import Tree
+
+
 def prepareData(df):
     dataType = df.dtypes.tolist()  # we need to know types of values in every column
     columnNames = df.columns.tolist()  # save the column names
@@ -58,6 +61,16 @@ def loadFromBoth():
                   'G1', 'G2', 'G3', 'course', 'Walc']]
     return workday, weekend
 
+# Train-Test Split
+def ttsplit( df, test_size):
+    size = round(test_size * len(df))
+    index = df.index.tolist()
+    test_indexes = sample(population=index, k=size)
+
+    test_df = df.loc[test_indexes]
+    train_df = df.drop(test_indexes)
+    return train_df, test_df
+
 
 def main():
     # Let's load a data
@@ -70,10 +83,11 @@ def main():
     train_df, test_df = ttsplit(workday_df, 0.4)
 
     # main algorithm
-    tree = buildTree(train_df, 0)
+    tree = Tree()
+    tree.buildTree(train_df, 0)
     pprint(tree)
 
-    result = testTree(tree, test_df)
+    result = tree.testTree(tree, test_df)
 
 
 if __name__ == "__main__":
