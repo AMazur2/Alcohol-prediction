@@ -84,10 +84,10 @@ def main():
 
     # main algorithm
     tree = Tree()
-    t = tree.buildTree(train_df, 0)
-    pprint(t)
+    newTree = tree.buildTree(train_df, 0)
+    pprint(newTree)
 
-    result = tree.testTree(test_df)
+    result = tree.testTree(newTree, test_df)
 
 
 if __name__ == "__main__":
