@@ -3,8 +3,9 @@ import pandas as pd
 
 class Tree:
 
+
     def __init__(self):
-        pass
+        self.containment = None
 
 
     # We check here whether our data set contains only data from one class
@@ -86,6 +87,7 @@ class Tree:
             data = df
 
         if self.isPure(data):
+            self.containment = self.classify(data)
             return self.classify(data)
         else:
             level += 1
@@ -105,6 +107,7 @@ class Tree:
                 subTree[question].append(yes_option)
                 subTree[question].append(no_option)
 
+            self.containment = subTree
             return subTree
 
     def tryToClassify(self, individual, tree):
