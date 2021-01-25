@@ -3,7 +3,6 @@ import pandas as pd
 from pprint import pprint
 from random import sample
 
-
 # Prepare data - all data in int
 from Tree import Tree
 
@@ -61,8 +60,9 @@ def loadFromBoth():
                   'G1', 'G2', 'G3', 'course', 'Walc']]
     return workday, weekend
 
+
 # Train-Test Split
-def ttsplit( df, test_size):
+def ttsplit(df, test_size):
     size = round(test_size * len(df))
     index = df.index.tolist()
     test_indexes = sample(population=index, k=size)
@@ -83,11 +83,13 @@ def main():
     train_df, test_df = ttsplit(workday_df, 0.4)
 
     # main algorithm
-    tree = Tree()
+    # 31 w przypadku uzycia loadData, 32 gdy uzwyamy loadFromBoth
+    tree = Tree(31)
     newTree = tree.buildTree(train_df, 0)
     pprint(newTree)
 
     result = tree.testTree(newTree, test_df)
+    print(result)
 
 
 if __name__ == "__main__":
