@@ -83,8 +83,8 @@ def main():
     train_df, test_df = ttsplit(workday_df, 0.4)
 
     # main algorithm
-    # 31 w przypadku uzycia loadData, 32 gdy uzwyamy loadFromBoth
-    tree = Tree(31)
+    # "Dalc" or "Walc" depending on which case do we try
+    tree = Tree(train_df.columns.get_loc("Dalc"))
     newTree = tree.buildTree(train_df, 0)
     pprint(newTree)
 
