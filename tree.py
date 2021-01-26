@@ -27,17 +27,11 @@ def prepareData(df):
 
 
 # Load and prepare data from specific file
-def loadData(filename):  # TODO: zrobic podzial lepszym sposobem niz wypisaniem wszystkiego
+def loadData(filename):
     df = pd.read_csv(filename)
     df = prepareData(df)
-    workday = df[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'reason',
-                  'guardian', 'traveltime', 'studytime', 'failures', 'schoolsup', 'famsup', 'paid', 'activities',
-                  'nursery', 'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'health', 'absences',
-                  'G1', 'G2', 'G3', 'Dalc']]
-    weekend = df[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'reason',
-                  'guardian', 'traveltime', 'studytime', 'failures', 'schoolsup', 'famsup', 'paid', 'activities',
-                  'nursery', 'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'health', 'absences',
-                  'G1', 'G2', 'G3', 'Walc']]
+    workday = df.drop(['Walc'], axis=1)
+    weekend = df.drop(['Dalc'], axis=1)
 
     return workday, weekend
 
@@ -50,14 +44,8 @@ def loadFromBoth():
     df2["course"] = "por"
     df = pd.concat([df1, df2], ignore_index=True)
     df = prepareData(df)
-    workday = df[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'reason',
-                  'guardian', 'traveltime', 'studytime', 'failures', 'schoolsup', 'famsup', 'paid', 'activities',
-                  'nursery', 'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'health', 'absences',
-                  'G1', 'G2', 'G3', 'course', 'Dalc']]
-    weekend = df[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'reason',
-                  'guardian', 'traveltime', 'studytime', 'failures', 'schoolsup', 'famsup', 'paid', 'activities',
-                  'nursery', 'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'health', 'absences',
-                  'G1', 'G2', 'G3', 'course', 'Walc']]
+    workday = df.drop(['Walc'], axis=1)
+    weekend = df.drop(['Dalc'], axis=1)
     return workday, weekend
 
 
@@ -74,21 +62,28 @@ def ttsplit(df, test_size):
 
 def main():
     # Let's load a data
-    workday_df, weekend_df = loadData("student-mat.csv")
+    # workday_df, weekend_df = loadData("student-mat.csv")
     # workday_df, weekend_df = loadData("student-por.csv")
-    # workday_df, weekend_df = loadFromBoth()
+    workday_df, weekend_df = loadFromBoth()
+
+    # "Dalc" or "Walc" depends on df
+    label = "Dalc"
 
     # Now we split data into train_df and test_df - we can split either workday_df or weekend_df
     # second parameter is test data size - between 0 and 1
-    train_df, test_df = ttsplit(workday_df, 0.4)
+    train, test = ttsplit(workday_df, 0.4)
+
+    train_labels = train[[label]]
+    train_df = train.drop([label], axis=1)
+    test_labels = test[[label]]
+    test_df = test.drop([label], axis=1)
 
     # main algorithm
-    # "Dalc" or "Walc" depending on which case do we try
-    tree = Tree(train_df.columns.get_loc("Dalc"))
-    newTree = tree.buildTree(train_df, 0)
+    tree = Tree()
+    newTree = tree.buildTree(train_df, train_labels, 0)
     pprint(newTree)
 
-    result = tree.testTree(newTree, test_df)
+    result = tree.testTree(newTree, test_df, test_labels)
     print(result)
 
 
