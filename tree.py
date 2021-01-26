@@ -5,6 +5,7 @@ from random import sample
 
 
 # Prepare data - all data in int
+from RandomForest import RandomForest
 from Tree import Tree
 
 
@@ -72,8 +73,14 @@ def ttsplit( df, test_size):
     return train_df, test_df
 
 
+def splitInputOutput(data: pd.DataFrame):
+    numberOfColumns: int = len(data.columns)
+    numberOfRows: int = len(data)
+    x = data.drop(['Dalc'], axis = 1)
+    y = data.Dalc
+    return x,y
+
 def main():
-    # Let's load a data
     workday_df, weekend_df = loadData("student-mat.csv")
     # workday_df, weekend_df = loadData("student-por.csv")
     # workday_df, weekend_df = loadFromBoth()
@@ -82,13 +89,15 @@ def main():
     # second parameter is test data size - between 0 and 1
     train_df, test_df = ttsplit(workday_df, 0.4)
 
-    # main algorithm
     tree = Tree()
     newTree = tree.buildTree(train_df, 0)
-    pprint(newTree)
-
+    # pprint(newTree)
+    print(train_df)
     result = tree.testTree(newTree, test_df)
-
+    
+    x, y = splitInputOutput(train_df)
+    print(x)
+    # rforest = RandomForest()
 
 if __name__ == "__main__":
     main()
