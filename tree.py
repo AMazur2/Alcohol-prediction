@@ -94,12 +94,15 @@ def main():
     # "Dalc" or "Walc" depending on which case do we try
     tree = Tree(train_df.columns.get_loc("Dalc"))
     newTree = tree.buildTree(train_df, 0)
-    pprint(newTree)
+    # pprint(newTree)
 
     result = tree.testTree(newTree, test_df)
 
     x, y = splitInputOutput(train_df)
-    print(x)
+
+    rf = RandomForest(5, 3, 10)
+    rf.fit(train_df)
+    # print(x)
     # rforest = RandomForest()
 
 if __name__ == "__main__":

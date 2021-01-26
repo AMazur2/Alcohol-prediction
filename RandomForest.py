@@ -1,39 +1,58 @@
 import numpy as np
 import pandas as pd
 
-
-
+from Tree import Tree
 
 
 class RandomForest:
 
-    #Number of samples in one tree
-    #Number of features in one tree
-    #Number of trees
+    #n = Number of samples in one tree
+    #d = Number of features in one tree
+    #n_estimators = Number of trees
 
-    def __init__(self, n: int, d: int, m: int):
+    def __init__(self, n: int, d: int, n_estimators: int):
         self.n = n
         self.d = d
-        self.m = m
+        self.n_estimators = n_estimators
         self.trees = []
 
     # x - features on wich I predict y - feature I want to predict
-    def fit(self, xTrain, yTrain):
-        # for i in range(self.m):
-        chosenSamples = self.randomSamples(self.n, xTrain)
-        readyDataset = np.array([1])
-        # print(readyDataset)
-        # np.delete(readyDataset,0)
-        # print(readyDataset)
-        for chosenSample in chosenSamples:
-            np.append(readyDataset,[self.randomFeatures(self.d, chosenSample)])
 
-        print(readyDataset)
+    def fit(self, train_df):
+        for treeIndex in range(self.n_estimators):
+            fsamples = train_df.sample(n=self.n, replace=False, axis=0)
+            samples = fsamples.sample(n=self.d, replace=False, axis=1)
+
+            tree = Tree(train_df.columns.get_loc("Dalc"));
+            tree.buildTree(samples,0)
+            self.trees.append(tree)
+            break
+
+
+    # def fit(self, xTrain, yTrain, feature_list):
+    #     for i in range(self.n_estimators):
+    #         chosenSamples = self.randomSamples(self.n, xTrain)
+    #         for chosenSample in chosenSamples:
+    #             chosenSamplesAndFeatures = self.randomFeatures(self.d, feature_list)
+    #             print (chosenSamplesAndFeatures)
+    #             train_df = pd.DataFrame(data=chosenSample[0:, 0:])  # values
+    #             #             # index = data[1:, 0],  # 1st column as index
+    #             #             # columns = data[0, 1:])
+    #         # readyDataset = np.array()
+    #         # # print(readyDataset)
+    #         # # np.delete(readyDataset,0)
+    #         # # print(readyDataset)
+    #         # for chosenSample in chosenSamples:
+    #         #     np.append(readyDataset,[self.randomFeatures(self.d, chosenSample)])
+    #
+    #         break
+
+        # print(readyDataset)
             # cd = randomFeatures(d,)
-        train_df = pd.DataFrame(data=readyDataset[0:, 0:])  # values
-                    # index = data[1:, 0],  # 1st column as index
-                    # columns = data[0, 1:])
-        print(train_df)
+        # train_df = pd.DataFrame(data=readyDataset[0:, 0:])  # values
+        #             # index = data[1:, 0],  # 1st column as index
+        #             # columns = data[0, 1:])
+        # print(train_df)
 
 
 
@@ -44,13 +63,14 @@ class RandomForest:
         number_of_rows = xTrain.shape[0]
         random_indices = np.random.choice(number_of_rows, size=n, replace=False)
         random_rows = xTrain[random_indices, :]
-        # random_rows = np.array(random_rows)
-        # print(type(random_rows))
+        # print(random_rows.shape)
         return random_rows
 
-    def randomFeatures(self, d, chosenSample):
-        number_of_rows = chosenSample.shape[0]
-        random_indices = np.random.choice(number_of_rows, size=d, replace=False)
-        random_rows = chosenSample[random_indices]
+    def randomFeatures(self, d, chosenSamples):
+        # number_of_columns = chosenSamples.shape[0]
+        rng = np.random.default_rng()
+        random_indices = rng.choice(chosenSamples, size=d, replace=False, axis = 0)
+        # random_rows = chosenSamples[random_indices]
+        # print(random_rows.shape)
         # print(random_rows)
-        return random_rows
+        return random_indices

@@ -54,13 +54,13 @@ def main():
     baseline(test_features, feature_list, test_labels)
 
     # Instantiate model with 1000 decision trees
-    # rf = RandomForestRegressor(n_estimators=1000, random_state=42)
+    # rf = RandomForestRegressor(n_estimators=1000, random_state=42, max_features = "sqrt")
     m = 1000
     n = len(train_labels)#all training set
     d =  int(math.sqrt(len(feature_list)))
     print(d)
-    myrf = RandomForest(3,d,m)
-    myrf.fit(train_features, train_labels)
+    myrf = RandomForest(5,d,m)
+    myrf.fit(train_features, train_labels, feature_list)
     # Train the model on training data
     # rf.fit(train_features, train_labels);
     #
@@ -75,8 +75,8 @@ def main():
     # mape = 100 * (errors / test_labels)
     # # Calculate and display accuracy
     # accuracy = 100 - np.mean(mape)
-    # print('Accuracy:', round(accuracy, 2), '%.')
-
+    # print('Accuracy:', round(accuracy, 2), '%.'
+    print("a")
 
 if __name__ == "__main__":
     main()
