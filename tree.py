@@ -67,11 +67,15 @@ def main():
     workday_df, weekend_df = loadFromBoth()
 
     # "Dalc" or "Walc" depends on df
+    # label = "Walc"
     label = "Dalc"
 
     # Now we split data into train_df and test_df - we can split either workday_df or weekend_df
     # second parameter is test data size - between 0 and 1
-    train, test = ttsplit(workday_df, 0.4)
+
+    test_size = 0.4
+    # train, test = ttsplit(weekend_df, test_size)
+    train, test = ttsplit(workday_df, test_size)
 
     train_labels = train[[label]]
     train_df = train.drop([label], axis=1)
