@@ -14,19 +14,37 @@ class RandomForest:
         self.n = n
         self.d = d
         self.n_estimators = n_estimators
-        self.trees = []
+        self.treesInfo = []
 
     # x - features on wich I predict y - feature I want to predict
 
     def fit(self, train_df):
+        # lables = train_df.drop(train_df.columns.difference(["Dalc"]), axis=1)
+        # features = train_df.drop("Dalc", axis = 1)
+        # print(train_df.head())
+        # print(type(features))
+        # print(features.head())
+        # print(lables.head())
+        # print(features.head())
         for treeIndex in range(self.n_estimators):
             fsamples = train_df.sample(n=self.n, replace=False, axis=0)
+            # print(fsamples.head())
+            lables = fsamples.drop(fsamples.columns.difference(["Dalc"]), axis=1)
+            # print(lables)
             samples = fsamples.sample(n=self.d, replace=False, axis=1)
+            # print(samples)
+            samples["Dalc"] = lables
+            # print(samples)
 
-            tree = Tree(train_df.columns.get_loc("Dalc"));
-            tree.buildTree(samples,0)
-            self.trees.append(tree)
-            break
+            tree = Tree(samples.columns.get_loc("Dalc"));
+            newTree = tree.buildTree(samples,0)
+
+            columns = list(samples.columns)
+            treeInfo = [newTree, columns]
+
+            # print(type(newTree))
+            # self.treesInfo.append(treeInfo)
+            # break
 
 
     # def fit(self, xTrain, yTrain, feature_list):
