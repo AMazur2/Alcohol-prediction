@@ -8,14 +8,14 @@ class Tree:
         pass
 
     # We check here whether our data set contains only data from one class
-    def isPure(self, data, label) -> bool:
+    def isPure(self, label) -> bool:
         uniques = np.unique(label)
         if len(uniques) == 1:
             return True
         return False
 
     # This function will be called only when data is pure, so we can return the classification of this data set
-    def classify(self, data, label):
+    def classify(self, label):
         l = label[0]
         return l[0]
 
@@ -95,8 +95,8 @@ class Tree:
             data = df
             label = labels
 
-        if self.isPure(data, label):
-            return self.classify(data, label)
+        if self.isPure(label):
+            return self.classify(label)
         else:
             level += 1
             splits = self.potentialSplits(data)
