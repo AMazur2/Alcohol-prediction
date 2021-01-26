@@ -98,10 +98,11 @@ def main():
 
     result = tree.testTree(newTree, test_df)
 
-    x, y = splitInputOutput(train_df)
+    # x, y = splitInputOutput(train_df)
 
-    rf = RandomForest(5, 3, 10)
+    rf = RandomForest(5, 3, 1)
     rf.fit(train_df)
+    rf.predict(test_df)
     # print(x)
     # rforest = RandomForest()
 
