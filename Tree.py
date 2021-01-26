@@ -3,14 +3,12 @@ import pandas as pd
 
 class Tree:
 
-
-    def __init__(self):
-        self.containment = None
-
+    def __init__(self, labelColumn: int):
+        self.labelColumn = labelColumn
 
     # We check here whether our data set contains only data from one class
-    def isPure( self, data) -> bool:
-        label = data[:, -1]
+    def isPure(self, data) -> bool:
+        label = data[:, self.labelColumn]
         uniques = np.unique(label)
         if len(uniques) == 1:
             return True
@@ -18,7 +16,7 @@ class Tree:
 
     # This function will be called only when data is pure, so we can return the classification of this data set
     def classify(self, data):
-        label = data[:, -1]
+        label = data[:, self.labelColumn]
         classification = label[0]
         return classification
 
@@ -26,16 +24,17 @@ class Tree:
     def potentialSplits(self, data):
         splits = {}
         _, numberOfColumns = data.shape
-        for column_id in range(numberOfColumns - 1):
-            splits[column_id] = []
-            values = data[:, column_id]
-            unique = np.sort(np.unique(values))
+        for column_id in range(numberOfColumns):
+            if column_id != self.labelColumn:
+                splits[column_id] = []
+                values = data[:, column_id]
+                unique = np.sort(np.unique(values))
 
-            for index in range(len(unique)):
-                if index != 0:
-                    currentVal = unique[index]
-                    previousVal = unique[index - 1]
-                    splits[column_id].append(float((currentVal + previousVal) / 2))
+                for index in range(len(unique)):
+                    if index != 0:
+                        currentVal = unique[index]
+                        previousVal = unique[index - 1]
+                        splits[column_id].append(float((currentVal + previousVal) / 2))
 
         return splits
 
@@ -46,7 +45,7 @@ class Tree:
 
     # Calculate entropy
     def entropy(self, data):
-        label = data[:, -1]
+        label = data[:, self.labelColumn]
         _, counts = np.unique(label, return_counts=True)
         probabilities = counts / counts.sum()
         return sum(probabilities * -np.log2(probabilities))
@@ -87,7 +86,6 @@ class Tree:
             data = df
 
         if self.isPure(data):
-            self.containment = self.classify(data)
             return self.classify(data)
         else:
             level += 1
@@ -107,7 +105,6 @@ class Tree:
                 subTree[question].append(yes_option)
                 subTree[question].append(no_option)
 
-            self.containment = subTree
             return subTree
 
     def tryToClassify(self, individual, tree):
@@ -129,7 +126,7 @@ class Tree:
 
         correct = 0
         for i in range(len(test_df)):
-            label = test_df.iloc[i][-1]
+            label = test_df.iloc[i][self.labelColumn]
             classification = self.tryToClassify(test_df.iloc[i], tree)
             if classification == label:
                 correct += 1

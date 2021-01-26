@@ -63,7 +63,7 @@ def loadFromBoth():
     return workday, weekend
 
 # Train-Test Split
-def ttsplit( df, test_size):
+def ttsplit(df, test_size):
     size = round(test_size * len(df))
     index = df.index.tolist()
     test_indexes = sample(population=index, k=size)
@@ -81,6 +81,7 @@ def splitInputOutput(data: pd.DataFrame):
     return x,y
 
 def main():
+    # Let's load a data
     workday_df, weekend_df = loadData("student-mat.csv")
     # workday_df, weekend_df = loadData("student-por.csv")
     # workday_df, weekend_df = loadFromBoth()
@@ -89,12 +90,14 @@ def main():
     # second parameter is test data size - between 0 and 1
     train_df, test_df = ttsplit(workday_df, 0.4)
 
-    tree = Tree()
+    # main algorithm
+    # "Dalc" or "Walc" depending on which case do we try
+    tree = Tree(train_df.columns.get_loc("Dalc"))
     newTree = tree.buildTree(train_df, 0)
-    # pprint(newTree)
-    print(train_df)
+    pprint(newTree)
+
     result = tree.testTree(newTree, test_df)
-    
+
     x, y = splitInputOutput(train_df)
     print(x)
     # rforest = RandomForest()
