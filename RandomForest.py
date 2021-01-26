@@ -24,19 +24,23 @@ class RandomForest:
 
             #TODO get predictions from trees
 
-    def fit(self, train_df):
+    #labelName = "Dalc" or "Walc"
+    def fit(self, train_df, labelName):
 
-        for treeIndex in range(self.n_estimators):#TODO works only if n = all samples
+        for treeIndex in range(self.n_estimators):
             #get n rows from train_df
             fsamples = train_df.sample(n=self.n, replace=False, axis=0)
-            #get Dalc
-            lables = fsamples.drop(fsamples.columns.difference(["Dalc"]), axis=1)
+
+            #get Dalc from chosen samles
+            lables = fsamples.drop(fsamples.columns.difference([labelName]), axis=1)
+
             #get d features
             samples = fsamples.sample(n=self.d, replace=False, axis=1)
-            #add dalc to features
-            samples["Dalc"] = lables
 
-            tree = Tree(samples.columns.get_loc("Dalc"))
+            #add dalc to features
+            samples[labelName] = lables
+
+            tree = Tree(samples.columns.get_loc(labelName))
             newTree = tree.buildTree(samples, 0)
 
             columns = list(samples.columns)

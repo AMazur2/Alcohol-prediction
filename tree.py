@@ -101,7 +101,7 @@ def main():
     # x, y = splitInputOutput(train_df)
 
     rf = RandomForest(5, 3, 1)
-    rf.fit(train_df)
+    rf.fit(train_df, "Dalc")
     rf.predict(test_df)
     # print(x)
     # rforest = RandomForest()
