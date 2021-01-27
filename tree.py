@@ -100,21 +100,14 @@ def main():
     test_labels = test[[label]]
     test_features = test.drop([label], axis=1)
 
-    # main algorithm
+
+
     tree = Tree()
     newTree = tree.buildTree(train_features, train_labels, 0)
-    # pprint(newTree)
-
-    # result = tree.testTree(newTree, test_df, test_labels)
-    # print(result)
 
     rf = RandomForest(5, 3, 10)
     rf.fit(train, label)
     predictions = rf.predict(test_features)
-    # print(predictions[0])
-    # print(predictions[1])
-    # print(predictions[2])
-    # print(test_labels.head())
 
     percent = accuracy(test_labels, predictions, label)
     print(percent)

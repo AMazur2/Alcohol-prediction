@@ -3,6 +3,16 @@ import math
 from RandomForest import RandomForest
 from tree import loadFromBoth, ttsplit, accuracy
 
+def averrageAccurancy(n, d, numberOfTrees, nomberOfForests, label, train, test_features, test_labels):
+    averrageAcurrancy = 0
+    for forest in range(nomberOfForests):
+        rf = RandomForest(n, d, numberOfTrees)
+        rf.fit(train, label)
+        predictions = rf.predict(test_features)
+        accurancy = accuracy(test_labels, predictions, label)
+        averrageAcurrancy += accurancy
+    return averrageAcurrancy / nomberOfForests
+
 
 def main():
     workday_df, weekend_df = loadFromBoth()
@@ -18,18 +28,21 @@ def main():
 
     feature_list = list(train.columns)
 
-    numberOfTrees = 100
+    numberOfTrees = 20
     n = len(train_labels)  # all training set
     #sqrt from features
     d = int(math.sqrt(len(feature_list)-2))
 
     # myrf = RandomForest(5, d, numberOfTrees)
     #
-    rf = RandomForest(n, d, numberOfTrees)
-    rf.fit(train, label)
-    predictions = rf.predict(test_features)
-    percent = accuracy(test_labels, predictions, label)
-    print(percent)
+    # rf = RandomForest(n, d, numberOfTrees)
+    # rf.fit(train, label)
+    # predictions = rf.predict(test_features)
+    # percent = accuracy(test_labels, predictions, label)
+    # print('Accuracy:', round(percent, 2), '%.')
+
+    ave = averrageAccurancy(n, d, numberOfTrees, 10, label, train, test_features, test_labels)
+    print(ave)
 
 
 if __name__ == "__main__":
