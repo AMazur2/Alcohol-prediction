@@ -73,7 +73,7 @@ def accuracy(test_labels, predictions, label):
         # print(i)
         # print(test_labels.iloc[i])
         # print(test_labels.iloc[i]["Dalc"], "\n")
-        dalc = test_labels.iloc[i]["Dalc"]
+        dalc = test_labels.iloc[i][label]
         if(dalc == predictions[i]):
             counter += 1
     return 100 * counter/len(test_labels)
