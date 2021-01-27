@@ -20,10 +20,6 @@ class RandomForest:
         self.treesInfo = []
 
     def predict(self, test_individual_features):
-        print(test_individual_features.head())
-        # label_values = test_label.values
-        # values = label_values[:, 0]
-
         predictions = []
         #iterate over every row in dataframe test_individual_features
         for i in range(len(test_individual_features)):
@@ -35,32 +31,9 @@ class RandomForest:
                 classification = tree.tryToClassify(test_individual_features.iloc[i], questions)
                 print(classification)
                 anwsers.append(classification)
-                break
             answer = mode(anwsers) #take most common answer
             predictions.append(answer)
-            break
-
-
-
-            # for feature in test_individual_features:
-        #     print(feature)
-        #     for treeinfo in self.treesInfo:
-        #         tree = treeinfo[0]
-        #         questions = treeinfo[1]
-        #         # columnNames = treeinfo[2]
-        #         # clasification = tree.tryToClassify(feature, questions)
-        #         # print(clasification)
-        #         break
-        #     break
-
-
-
-            # take only features on with the tree was trained
-            # lables = test_df.drop(test_df.columns.difference(columnNames), axis=1)
-            # print(lables.head())
-
-
-            #TODO get predictions from trees
+        return predictions
 
     #labelName = "Dalc" or "Walc"
     def fit(self, train_df, labelName):

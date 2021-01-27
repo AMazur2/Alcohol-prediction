@@ -100,7 +100,8 @@ def main():
 
     rf = RandomForest(5, 3, 10)
     rf.fit(train, label)
-    rf.predict(test_features)
+    predictions = rf.predict(test_features)
+    print(predictions)
 
 
 if __name__ == "__main__":
