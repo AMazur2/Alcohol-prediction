@@ -18,10 +18,17 @@ class RandomForest:
 
     def predict(self, test_df):
         for treeinfo in self.treesInfo:
-            # take only features on with the tree was trained
-            lables = test_df.drop(test_df.columns.difference(treeinfo[1]), axis=1)
-            print(lables.head())
+            tree = treeinfo[0]
+            questions = treeinfo[1]
+            columnNames = treeinfo[2]
 
+            # take only features on with the tree was trained
+            lables = test_df.drop(test_df.columns.difference(columnNames), axis=1)
+            # print(lables.head())
+
+            for label in lables:
+                clasification = tree.tryToClassify(label, questions)
+                print(clasification)
             #TODO get predictions from trees
 
     #labelName = "Dalc" or "Walc"
@@ -41,10 +48,10 @@ class RandomForest:
             samples[labelName] = lables
 
             tree = Tree(samples.columns.get_loc(labelName))
-            newTree = tree.buildTree(samples, 0)
+            questions = tree.buildTree(samples, 0)
 
-            columns = list(samples.columns)
-            treeInfo = [newTree, columns]
+            columnNames = list(samples.columns)
+            treeInfo = [tree, questions, columnNames]
 
             self.treesInfo.append(treeInfo)
 
