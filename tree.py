@@ -83,16 +83,16 @@ def main():
     test_df = test.drop([label], axis=1)
 
     # main algorithm
-    tree = Tree()
-    newTree = tree.buildTree(train_df, train_labels, 0)
-    pprint(newTree)
+    # tree = Tree()
+    # newTree = tree.buildTree(train_df, train_labels, 0)
+    # pprint(newTree)
 
-    result = tree.testTree(newTree, test_df, test_labels)
-    print(result)
+    # result = tree.testTree(newTree, test_df, test_labels)
+    # print(result)
 
-    # rf = RandomForest(15, 10, 7)
-    # rf.fit(train, label)
-    # rf.predict(test)
+    rf = RandomForest(30, 20, 10)
+    rf.fit(train, label)
+    rf.predict(test, label)
 
 
 if __name__ == "__main__":
