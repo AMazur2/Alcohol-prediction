@@ -55,11 +55,11 @@ def main():
 
     # Instantiate model with 1000 decision trees
     # rf = RandomForestRegressor(n_estimators=1000, random_state=42, max_features = "sqrt")
-    m = 1000
+    numberOfTrees = 1000
     n = len(train_labels)#all training set
     d =  int(math.sqrt(len(feature_list)))
     print(d)
-    myrf = RandomForest(5,d,m)
+    myrf = RandomForest(5,d,numberOfTrees)
     myrf.fit(train_features, train_labels, feature_list)
     # Train the model on training data
     # rf.fit(train_features, train_labels);

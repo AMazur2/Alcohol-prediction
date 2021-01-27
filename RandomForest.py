@@ -2,6 +2,7 @@ from pprint import pprint
 
 import numpy as np
 import pandas as pd
+from statistics import mode
 
 from Tree import Tree
 
@@ -22,15 +23,21 @@ class RandomForest:
         print(test_individual_features.head())
         # label_values = test_label.values
         # values = label_values[:, 0]
-        correct = 0
+
+        predictions = []
+        #iterate over every row in dataframe test_individual_features
         for i in range(len(test_individual_features)):
+            anwsers = []
             for treeinfo in self.treesInfo:
                 tree = treeinfo[0]
                 questions = treeinfo[1]
 
                 classification = tree.tryToClassify(test_individual_features.iloc[i], questions)
                 print(classification)
+                anwsers.append(classification)
                 break
+            answer = mode(anwsers) #take most common answer
+            predictions.append(answer)
             break
 
 
