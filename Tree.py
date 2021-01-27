@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from pprint import pprint
 
 
 class Tree:
@@ -73,16 +74,41 @@ class Tree:
         splitColumn = 0
         splitValue = 0
         for column_id in splits:
-            for value in splits[column_id]:
-                below, l_below, above, l_above = self.split(data, label, column_id, value)
-                currEntropy = self.overallEntropy(below, l_below, above, l_above)
+            if bool(splits[column_id]):
+                for value in splits[column_id]:
+                    below, l_below, above, l_above = self.split(data, label, column_id, value)
+                    currEntropy = self.overallEntropy(below, l_below, above, l_above)
 
-                if currEntropy < splitEntropy:
-                    splitEntropy = currEntropy
-                    splitValue = value
-                    splitColumn = column_id
+                    if currEntropy < splitEntropy:
+                        splitEntropy = currEntropy
+                        splitValue = value
+                        splitColumn = column_id
 
         return splitColumn, splitValue
+
+    def checkDict(self, dict):
+        empty = 0
+        for key in dict.keys():
+            if not bool(dict[key]):
+                empty = empty + 1
+        if empty == len(dict):
+            return False
+        else:
+            return True
+
+    def mostCommon(self, label_list):
+        (uniques, counts) = np.unique(label_list, return_counts=True)
+
+        mostCommonIndex = 0
+        mostCommon = 0
+
+        for i in range(len(uniques)):
+            if mostCommon < counts[i]:
+                mostCommonIndex = i
+                mostCommon = counts[i]
+
+        l = label_list[mostCommonIndex]
+        return l[0]
 
     # Build decision tree where subtree is: {question: [yes_option, no_option]}
     def buildTree(self, df, labels, level):
@@ -100,22 +126,25 @@ class Tree:
         else:
             level += 1
             splits = self.potentialSplits(data)
-            splitColumn, splitValue = self.bestSplit(data, label, splits)
-            dataBelow, label_below, dataAbove, label_above = self.split(data, label, splitColumn, splitValue)
+            if self.checkDict(splits):
+                splitColumn, splitValue = self.bestSplit(data, label, splits)
+                dataBelow, label_below, dataAbove, label_above = self.split(data, label, splitColumn, splitValue)
 
-            question = "{} <= {}".format(columnHeaders[splitColumn], splitValue)
-            subTree = {question: []}
+                question = "{} <= {}".format(columnHeaders[splitColumn], splitValue)
+                subTree = {question: []}
 
-            yes_option = self.buildTree(dataBelow, label_below, level)
-            no_option = self.buildTree(dataAbove, label_above, level)
+                yes_option = self.buildTree(dataBelow, label_below, level)
+                no_option = self.buildTree(dataAbove, label_above, level)
 
-            if yes_option == no_option:
-                subTree[question].append(yes_option)
+                if yes_option == no_option:
+                    subTree[question].append(yes_option)
+                else:
+                    subTree[question].append(yes_option)
+                    subTree[question].append(no_option)
+
+                return subTree
             else:
-                subTree[question].append(yes_option)
-                subTree[question].append(no_option)
-
-            return subTree
+                return self.mostCommon(label)
 
     def tryToClassify(self, individual, tree):
         question = list(tree.keys())[0]
