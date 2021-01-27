@@ -149,6 +149,7 @@ class Tree:
         question = list(tree.keys())[0]
         feature, operator, value = question.split()
 
+
         if individual[feature] <= float(value):
             answer = tree[question][0]
         else:

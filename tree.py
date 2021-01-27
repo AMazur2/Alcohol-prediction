@@ -86,21 +86,21 @@ def main():
     train, test = ttsplit(workday_df, test_size)
 
     train_labels = train[[label]]
-    train_df = train.drop([label], axis=1)
+    train_features = train.drop([label], axis=1)
     test_labels = test[[label]]
-    test_df = test.drop([label], axis=1)
+    test_features = test.drop([label], axis=1)
 
     # main algorithm
     tree = Tree()
-    newTree = tree.buildTree(train_df, train_labels, 0)
-    pprint(newTree)
+    newTree = tree.buildTree(train_features, train_labels, 0)
+    # pprint(newTree)
 
-    result = tree.testTree(newTree, test_df, test_labels)
-    print(result)
+    # result = tree.testTree(newTree, test_df, test_labels)
+    # print(result)
 
-    # rf = RandomForest(15, 10, 7)
-    # rf.fit(train, label)
-    # rf.predict(test)
+    rf = RandomForest(5, 3, 10)
+    rf.fit(train, label)
+    rf.predict(test_features)
 
 
 if __name__ == "__main__":

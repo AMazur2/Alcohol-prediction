@@ -18,43 +18,70 @@ class RandomForest:
         self.n_estimators = n_estimators
         self.treesInfo = []
 
-    def predict(self, test_df):
-        for treeinfo in self.treesInfo:
-            tree = treeinfo[0]
-            questions = treeinfo[1]
-            columnNames = treeinfo[2]
+    def predict(self, test_individual_features):
+        print(test_individual_features.head())
+        # label_values = test_label.values
+        # values = label_values[:, 0]
+        correct = 0
+        for i in range(len(test_individual_features)):
+            for treeinfo in self.treesInfo:
+                tree = treeinfo[0]
+                questions = treeinfo[1]
+
+                classification = tree.tryToClassify(test_individual_features.iloc[i], questions)
+                print(classification)
+                break
+            break
+
+
+
+            # for feature in test_individual_features:
+        #     print(feature)
+        #     for treeinfo in self.treesInfo:
+        #         tree = treeinfo[0]
+        #         questions = treeinfo[1]
+        #         # columnNames = treeinfo[2]
+        #         # clasification = tree.tryToClassify(feature, questions)
+        #         # print(clasification)
+        #         break
+        #     break
+
+
 
             # take only features on with the tree was trained
-            lables = test_df.drop(test_df.columns.difference(columnNames), axis=1)
+            # lables = test_df.drop(test_df.columns.difference(columnNames), axis=1)
             # print(lables.head())
 
-            for label in lables:
-                clasification = tree.tryToClassify(label, questions)
-                print(clasification)
+
             #TODO get predictions from trees
 
     #labelName = "Dalc" or "Walc"
     def fit(self, train_df, labelName):
-
         for treeIndex in range(self.n_estimators):
+
             #get n rows from train_df
             fsamples = train_df.sample(n=self.n, replace=False, axis=0)
+            # print(labelName)
 
             #get Dalc from chosen samles
-            lables = fsamples.drop(fsamples.columns.difference([labelName]), axis=1)
+            lables = fsamples[[labelName]]
+            fsamples = fsamples.drop([labelName], axis=1)
+            # print(lables)
+            # print(fsamples)
 
             #get d features
             samples = fsamples.sample(n=self.d, replace=False, axis=1)
+            # print(samples)
 
             #add dalc to features
             samples[labelName] = lables
 
-            tree = Tree(samples.columns.get_loc(labelName))
-            questions = tree.buildTree(samples, 0)
+            tree = Tree()
+            questions = tree.buildTree(samples, lables, 0)
 
-            columnNames = list(samples.columns)
-            treeInfo = [tree, questions, columnNames]
-
+            # columnNames = list(samples.columns)
+            treeInfo = [tree, questions]
+            #
             self.treesInfo.append(treeInfo)
 
 
