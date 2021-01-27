@@ -5,7 +5,7 @@ from random import sample
 
 # Prepare data - all data in int
 from Tree import Tree
-
+from RandomForest import RandomForest
 
 def prepareData(df):
     dataType = df.dtypes.tolist()  # we need to know types of values in every column
@@ -89,6 +89,10 @@ def main():
 
     result = tree.testTree(newTree, test_df, test_labels)
     print(result)
+
+    # rf = RandomForest(15, 10, 7)
+    # rf.fit(train, label)
+    # rf.predict(test)
 
 
 if __name__ == "__main__":
