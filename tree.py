@@ -67,6 +67,17 @@ def splitInputOutput(data: pd.DataFrame):
     y = data.Dalc
     return x,y
 
+def accuracy(test_labels, predictions, label):
+    counter=0
+    for i in range(len(test_labels)):
+        # print(i)
+        # print(test_labels.iloc[i])
+        # print(test_labels.iloc[i]["Dalc"], "\n")
+        dalc = test_labels.iloc[i]["Dalc"]
+        if(dalc == predictions[i]):
+            counter += 1
+    return 100 * counter/len(test_labels)
+
 def main():
     # Let's load a data
     # workday_df, weekend_df = loadData("student-mat.csv")
@@ -100,7 +111,13 @@ def main():
     rf = RandomForest(5, 3, 10)
     rf.fit(train, label)
     predictions = rf.predict(test_features)
-    print(predictions)
+    # print(predictions[0])
+    # print(predictions[1])
+    # print(predictions[2])
+    # print(test_labels.head())
+
+    percent = accuracy(test_labels, predictions, label)
+    print(percent)
 
 
 if __name__ == "__main__":

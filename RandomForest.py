@@ -3,6 +3,7 @@ from pprint import pprint
 import numpy as np
 import pandas as pd
 from statistics import mode
+from collections import Counter
 
 from Tree import Tree
 
@@ -19,14 +20,24 @@ class RandomForest:
         self.n_estimators = n_estimators
         self.treesInfo = []
 
-    def predict(self, test_df):
-        for tree in self.trees:
-            # take only features on with the tree was trained
-            #lables = test_df.drop(test_df.columns.difference(treeinfo[1]), axis=1)
-            #print(lables.head())
-            pprint(tree)
+    def predict(self, test_individual_features):
+        predictions = []
+        #iterate over every row in dataframe test_individual_features
+        for i in range(len(test_individual_features)):
+            # print(test_individual_features.shape)
+            anwsers = []
+            for treeinfo in self.treesInfo:
+                tree = treeinfo[0]
+                questions = treeinfo[1]
 
-            #TODO get predictions from trees
+                classification = tree.tryToClassify(test_individual_features.iloc[i], questions)
+                # print(classification)
+                anwsers.append(classification)
+
+            answer = Counter(anwsers)
+            #add most common feature
+            predictions.append(answer.most_common(1)[0][0])
+        return predictions
 
     #labelName = "Dalc" or "Walc"
     def fit(self, train_df, labelName):
@@ -41,11 +52,8 @@ class RandomForest:
             #get d features
             samples = fsamples.sample(n=self.d, replace=False, axis=1)
 
-            #add dalc to features
-            samples[labelName] = lables
-
             tree = Tree()
-            questions = tree.buildTree(samples, lables, 0)
+            questions = tree.buildTree(samples, labels, 0)
 
             # columnNames = list(samples.columns)
             treeInfo = [tree, questions]

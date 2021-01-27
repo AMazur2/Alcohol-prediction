@@ -146,6 +146,8 @@ class Tree:
                 return self.mostCommon(label)
 
     def tryToClassify(self, individual, tree):
+        if(isinstance(tree, float)):
+            return tree
         question = list(tree.keys())[0]
         feature, operator, value = question.split()
 
@@ -153,7 +155,10 @@ class Tree:
         if individual[feature] <= float(value):
             answer = tree[question][0]
         else:
-            answer = tree[question][1]
+            try:
+                answer = tree[question][1]
+            except IndexError:
+                answer = tree[question][0]
 
         if not isinstance(answer, dict):
             return answer

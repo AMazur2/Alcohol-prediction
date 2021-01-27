@@ -1,7 +1,7 @@
 import math
 
 from RandomForest import RandomForest
-from tree import loadFromBoth, ttsplit
+from tree import loadFromBoth, ttsplit, accuracy
 
 
 def main():
@@ -18,15 +18,18 @@ def main():
 
     feature_list = list(train.columns)
 
-    numberOfTrees = 1000
+    numberOfTrees = 100
     n = len(train_labels)  # all training set
-    d = int(math.sqrt(len(feature_list)))
-    print(len(feature_list))
+    #sqrt from features
+    d = int(math.sqrt(len(feature_list)-2))
+
     # myrf = RandomForest(5, d, numberOfTrees)
     #
-    # rf = RandomForest(5, 3, 10)
-    # rf.fit(train, label)
-    # rf.predict(test_features)
+    rf = RandomForest(n, d, numberOfTrees)
+    rf.fit(train, label)
+    predictions = rf.predict(test_features)
+    percent = accuracy(test_labels, predictions, label)
+    print(percent)
 
 
 if __name__ == "__main__":
