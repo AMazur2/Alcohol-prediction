@@ -18,13 +18,17 @@ class RandomForest:
         self.n_estimators = n_estimators
         self.trees = []
 
-    def predict(self, test_df):
-        for tree in self.trees:
+    def predict(self, test_df, labelName):
+        labels = test_df[[labelName]]
+        test = test_df.drop([labelName], axis=1)
+        tree = Tree()
+        for singleTree in self.trees:
             # take only features on with the tree was trained
             #lables = test_df.drop(test_df.columns.difference(treeinfo[1]), axis=1)
             #print(lables.head())
-            pprint(tree)
-
+            pprint(singleTree)
+            result = tree.testTree(singleTree, test, labels)
+            print(result)
             #TODO get predictions from trees
 
     #labelName = "Dalc" or "Walc"
