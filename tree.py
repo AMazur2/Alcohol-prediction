@@ -5,7 +5,7 @@ from random import sample
 
 # Prepare data - all data in int
 from Tree import Tree
-
+from RandomForest import RandomForest
 
 def prepareData(df):
     dataType = df.dtypes.tolist()  # we need to know types of values in every column
@@ -27,17 +27,11 @@ def prepareData(df):
 
 
 # Load and prepare data from specific file
-def loadData(filename):  # TODO: zrobic podzial lepszym sposobem niz wypisaniem wszystkiego
+def loadData(filename):
     df = pd.read_csv(filename)
     df = prepareData(df)
-    workday = df[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'reason',
-                  'guardian', 'traveltime', 'studytime', 'failures', 'schoolsup', 'famsup', 'paid', 'activities',
-                  'nursery', 'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'health', 'absences',
-                  'G1', 'G2', 'G3', 'Dalc']]
-    weekend = df[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'reason',
-                  'guardian', 'traveltime', 'studytime', 'failures', 'schoolsup', 'famsup', 'paid', 'activities',
-                  'nursery', 'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'health', 'absences',
-                  'G1', 'G2', 'G3', 'Walc']]
+    workday = df.drop(['Walc'], axis=1)
+    weekend = df.drop(['Dalc'], axis=1)
 
     return workday, weekend
 
@@ -50,14 +44,8 @@ def loadFromBoth():
     df2["course"] = "por"
     df = pd.concat([df1, df2], ignore_index=True)
     df = prepareData(df)
-    workday = df[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'reason',
-                  'guardian', 'traveltime', 'studytime', 'failures', 'schoolsup', 'famsup', 'paid', 'activities',
-                  'nursery', 'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'health', 'absences',
-                  'G1', 'G2', 'G3', 'course', 'Dalc']]
-    weekend = df[['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'reason',
-                  'guardian', 'traveltime', 'studytime', 'failures', 'schoolsup', 'famsup', 'paid', 'activities',
-                  'nursery', 'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'health', 'absences',
-                  'G1', 'G2', 'G3', 'course', 'Walc']]
+    workday = df.drop(['Walc'], axis=1)
+    weekend = df.drop(['Dalc'], axis=1)
     return workday, weekend
 
 
@@ -72,24 +60,57 @@ def ttsplit(df, test_size):
     return train_df, test_df
 
 
+def splitInputOutput(data: pd.DataFrame):
+    numberOfColumns: int = len(data.columns)
+    numberOfRows: int = len(data)
+    x = data.drop(['Dalc'], axis = 1)
+    y = data.Dalc
+    return x,y
+
+def accuracy(test_labels, predictions, label):
+    counter=0
+    for i in range(len(test_labels)):
+        # print(i)
+        # print(test_labels.iloc[i])
+        # print(test_labels.iloc[i]["Dalc"], "\n")
+        dalc = test_labels.iloc[i][label]
+        if(dalc == predictions[i]):
+            counter += 1
+    return 100 * counter/len(test_labels)
+
 def main():
     # Let's load a data
-    workday_df, weekend_df = loadData("student-mat.csv")
+    # workday_df, weekend_df = loadData("student-mat.csv")
     # workday_df, weekend_df = loadData("student-por.csv")
-    # workday_df, weekend_df = loadFromBoth()
+    workday_df, weekend_df = loadFromBoth()
+
+    # "Dalc" or "Walc" depends on df
+    # label = "Walc"
+    label = "Dalc"
 
     # Now we split data into train_df and test_df - we can split either workday_df or weekend_df
     # second parameter is test data size - between 0 and 1
-    train_df, test_df = ttsplit(workday_df, 0.4)
 
-    # main algorithm
-    # "Dalc" or "Walc" depending on which case do we try
-    tree = Tree(train_df.columns.get_loc("Dalc"))
-    newTree = tree.buildTree(train_df, 0)
-    pprint(newTree)
+    test_size = 0.4
+    # train, test = ttsplit(weekend_df, test_size)
+    train, test = ttsplit(workday_df, test_size)
 
-    result = tree.testTree(newTree, test_df)
-    print(result)
+    train_labels = train[[label]]
+    train_features = train.drop([label], axis=1)
+    test_labels = test[[label]]
+    test_features = test.drop([label], axis=1)
+
+
+
+    tree = Tree()
+    newTree = tree.buildTree(train_features, train_labels, 0)
+
+    rf = RandomForest(5, 3, 10)
+    rf.fit(train, label)
+    predictions = rf.predict(test_features)
+
+    percent = accuracy(test_labels, predictions, label)
+    print(percent)
 
 
 if __name__ == "__main__":
