@@ -19,39 +19,27 @@ class RandomForest:
         self.n_estimators = n_estimators
         self.treesInfo = []
 
-    def predict(self, test_individual_features):
-        predictions = []
-        #iterate over every row in dataframe test_individual_features
-        for i in range(len(test_individual_features)):
-            anwsers = []
-            for treeinfo in self.treesInfo:
-                tree = treeinfo[0]
-                questions = treeinfo[1]
+    def predict(self, test_df):
+        for tree in self.trees:
+            # take only features on with the tree was trained
+            #lables = test_df.drop(test_df.columns.difference(treeinfo[1]), axis=1)
+            #print(lables.head())
+            pprint(tree)
 
-                classification = tree.tryToClassify(test_individual_features.iloc[i], questions)
-                print(classification)
-                anwsers.append(classification)
-            answer = mode(anwsers) #take most common answer
-            predictions.append(answer)
-        return predictions
+            #TODO get predictions from trees
 
     #labelName = "Dalc" or "Walc"
     def fit(self, train_df, labelName):
         for treeIndex in range(self.n_estimators):
-
             #get n rows from train_df
             fsamples = train_df.sample(n=self.n, replace=False, axis=0)
-            # print(labelName)
 
             #get Dalc from chosen samles
-            lables = fsamples[[labelName]]
+            labels = fsamples[[labelName]]
             fsamples = fsamples.drop([labelName], axis=1)
-            # print(lables)
-            # print(fsamples)
 
             #get d features
             samples = fsamples.sample(n=self.d, replace=False, axis=1)
-            # print(samples)
 
             #add dalc to features
             samples[labelName] = lables

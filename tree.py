@@ -4,9 +4,8 @@ from pprint import pprint
 from random import sample
 
 # Prepare data - all data in int
-from RandomForest import RandomForest
 from Tree import Tree
-
+from RandomForest import RandomForest
 
 def prepareData(df):
     dataType = df.dtypes.tolist()  # we need to know types of values in every column
